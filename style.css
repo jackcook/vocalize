@@ -2,3 +2,8 @@ body {
 	background-color: #000000;
 	color: #FFFFFF;
 }
+
+p {
+
+	font-family: 'Open Sans', sans-serif;
+}
