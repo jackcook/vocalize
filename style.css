@@ -4,6 +4,10 @@ body {
 }
 
 p {
-
 	font-family: 'Open Sans', sans-serif;
+}
+
+.editor {
+	font-family: 'Open Sans', sans-serif;
+	outline: 0px solid transparent;
 }
