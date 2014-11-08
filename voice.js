@@ -56,6 +56,7 @@ function process_command(command) {
         } else if (args[1] == "string") {
           editor.insert("\"");
         }
+        process_command("break");
         break;
       case "end":
         if (args[1] == "function") {
@@ -67,6 +68,11 @@ function process_command(command) {
         break;
       case "import":
         editor.insert("import " + args[1]);
+        break;
+      case "set":
+        if (args[2] == "language") {
+          editor.getSession().setMode("ace/mode/" + args[4].toLowerCase());
+        }
         break;
       default:
         console.log(args);
