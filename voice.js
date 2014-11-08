@@ -74,6 +74,12 @@ function process_command(command) {
           editor.getSession().setMode("ace/mode/" + args[4].toLowerCase());
         }
         break;
+      case "find":
+        editor.find(args[1]);
+        break;
+      case "replace":
+        editor.replace(args[1]);
+        break;
       default:
         console.log(args);
     }
