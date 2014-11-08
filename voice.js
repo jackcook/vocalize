@@ -1,7 +1,6 @@
 window.speechRecognition = ( window.speechRecognition || window.webkitSpeechRecognition);
 
-// Check access to the speech recogntion object
-if(!!window.speechRecognition) {
+if (!!window.speechRecognition) {
     recognition = new webkitSpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
@@ -11,7 +10,13 @@ if(!!window.speechRecognition) {
 
     recognition.onstart = function() { console.log("Speech recognition started."); }
     recognition.onresult = function(event) {
-        // Do something with the result
+      for (var i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+          //console.log(event.results[i][0].transcript);
+        } else {
+          console.log(event.results[i][0].transcript);
+        }
+      }
     }
     recognition.onerror = function(event) { console.log("Error", event); }
     recognition.onend = function() { console.log("Speech recognition ended"); }
