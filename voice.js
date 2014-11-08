@@ -20,8 +20,6 @@ if (!!window.speechRecognition) {
   console.error("Speech recognition is not available on this device.");
 }
 
-var i = "";
-
 function process_command(command) {
   var args = command.split(" ");
 
@@ -31,7 +29,7 @@ function process_command(command) {
     if (args[0] == "") args.shift();
     switch (args[0]) {
       case "break":
-        editor.insert("\n" + i);
+        editor.insert("\n");
         break;
       case "call":
         editor.insert(args[3] + "." + args[1] + "()");
@@ -50,16 +48,15 @@ function process_command(command) {
             console.log(args[4]);
             editor.insert("def " + args[2] + "():");
           }
-
-          i += "  ";
         } else if (args[1] == "string") {
           editor.insert("\"");
         }
         break;
       case "end":
         if (args[1] == "function") {
-          i.replace(/\ /g, "");
           editor.insert("\n");
+          editor.removeToLineStart();
+          console.log("endfunction");
         } else if (args[1] == "string") {
           editor.insert("\"");
         }
