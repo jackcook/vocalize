@@ -37,6 +37,7 @@ function process_command(command) {
         } else {
           editor.insert(args[1] + "()");
         }
+        process_command("break");
         break;
       case "create":
         if (args[1] == "function") {
@@ -60,7 +61,6 @@ function process_command(command) {
         if (args[1] == "function") {
           editor.insert("\n");
           editor.removeToLineStart();
-          console.log("endfunction");
         } else if (args[1] == "string") {
           editor.insert("\"");
         }
