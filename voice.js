@@ -68,6 +68,10 @@ function process_command(command) {
       case "import":
         editor.insert("import " + args[1]);
         break;
+      case "find": 
+        editor.find(args[1]);
+      case "replace": 
+        editor.replace(args[1])
       default:
         console.log(args);
     }
