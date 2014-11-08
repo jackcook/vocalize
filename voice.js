@@ -32,7 +32,11 @@ function process_command(command) {
         editor.insert("\n");
         break;
       case "call":
-        editor.insert(args[3] + "." + args[1] + "()");
+        if (args[2] == "from") {
+          editor.insert(args[3] + "." + args[1] + "()");
+        } else {
+          editor.insert(args[1] + "()");
+        }
         break;
       case "create":
         if (args[1] == "function") {
