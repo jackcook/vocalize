@@ -32,10 +32,13 @@ function process_command(command) {
         editor.innerHTML += "break\ntest";
       case "call":
         editor.innerHTML += args[3] + "." + args[1] + "()";
-      case "test":
-        console.log(args[1]);
-      default:
-        console.log(args[0]);
+      case "import":
+        editor.innerHTML += "import " + args[1];
     }
   }
+}
+
+function write_line(line) {
+  var editor = document.getElementById("editor");
+  editor.innerHTML += line;
 }
