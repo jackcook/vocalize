@@ -20,19 +20,55 @@ if (!!window.speechRecognition) {
   console.error("Speech recognition is not available on this device.");
 }
 
+var i = "";
+
 function process_command(command) {
   var args = command.split(" ");
 
   if (args[0].substr(args[0].length - 1) == ".") {
     editor.insert(args[0] + args[1] + "()");
   } else {
+    if (args[0] == "") args.shift();
     switch (args[0]) {
       case "break":
-        editor.insert("break\ntest");
+        editor.insert("\n" + i);
+        break;
       case "call":
         editor.insert(args[3] + "." + args[1] + "()");
+        break;
+      case "create":
+        if (args[1] == "function") {
+          if (args[4] == "parameters" || args[4] == "parameter" || args[4] == "perimeter") {
+            var params = args.slice(5);
+            if (params.length > 1) {
+              params.splice(-2, 1);
+              editor.insert("def " + args[2] + "(" + params + "):");
+            } else {
+              editor.insert("def " + args[2] + "(" + args[5] + "):");
+            }
+          } else {
+            console.log(args[4]);
+            editor.insert("def " + args[2] + "():");
+          }
+
+          i += "  ";
+        } else if (args[1] == "string") {
+          editor.insert("\"");
+        }
+        break;
+      case "end":
+        if (args[1] == "function") {
+          i.replace(/\ /g, "");
+          editor.insert("\n");
+        } else if (args[1] == "string") {
+          editor.insert("\"");
+        }
+        break;
       case "import":
         editor.insert("import " + args[1]);
+        break;
+      default:
+        console.log(args);
     }
   }
 }
