@@ -96,6 +96,27 @@ function process_command(command) {
       case "delta":
         editor.gotoLine(args[2]);
         break;
+      case "if":
+      case "while":
+        args.shift();
+        var argstr = args.join(" ");
+        argstr = argstr.replace("is ", "");
+        argstr = argstr.replace("than ", "");
+        argstr = argstr.replace("then ", "");
+        argstr = argstr.replace("equals", "==");
+        argstr = argstr.replace("equal to", "==");
+        argstr = argstr.replace("equal", "==");
+        argstr = argstr.replace("less", "<");
+        argstr = argstr.replace("more", ">");
+        argstr = argstr.replace("greater", ">");
+
+        editor.insert(args[0] + " " + argstr + ":");
+        process_command("break");
+        break;
+      case "switch":
+        editor.insert(args[0] + " " + args[1] + ":");
+        process_command("break");
+        break;
       default:
         console.log(args);
     }
