@@ -1,200 +1,193 @@
-window.speechRecognition = (window.speechRecognition || window.webkitSpeechRecognition);
-
 var language = "python";
-var string = false;
 
-if (!!window.speechRecognition) {
-  recognition = new webkitSpeechRecognition();
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.start();
+if (annyang) {
+  var brake = function() {
+    editor.insert("\n");
+  };
 
-  recognition.onstart = function() { console.log("Speech recognition started."); }
-  recognition.onresult = function(event) {
-    for (var i = event.resultIndex; i < event.results.length; i++) {
-      if (event.results[i].isFinal) {
-        var cmd = event.results[i][0].transcript;
-        if (string) {
-          if (cmd == " end string" || cmd == " and string") {
-            process_command(cmd);
-          } else {
-            editor.insert(cmd);
-          }
-        } else {
-          process_command(cmd);
-        }
-      }
+  var call = function(method, library) {
+    if (typeof library == "undefined") {
+      editor.insert(method + "()");
+    } else {
+      editor.insert(library + "." + method + "()");
     }
-  }
-  recognition.onerror = function(event) { console.log("Error", event); }
-  recognition.onend = function() { console.log("Speech recognition ended"); }
-} else {
-  console.error("Speech recognition is not available on this device.");
-}
 
-function process_command(command) {
-  var args = command.split(" ");
+    editor.insert("\n");
+  };
 
-  for (var i = 0; i < args.length; i++) {
-    args[i] = args[i].toLowerCase();
-  }
-
-  if (args[0].substr(args[0].length - 1) == ".") {
-    editor.insert(args[0] + args[1] + "()");
-  } else {
-    if (args[0] == "") args.shift();
-    switch (args[0]) {
-      case "break":
-        editor.insert("\n");
+  var functoin = function(name, params) {
+    switch (language) {
+      case "assembly_x86":
+        editor.insert("PUBLIC _" + name + "\n_" + name + " PROC");
         break;
-      case "call":
-        if (args[2] == "from") {
-          editor.insert(call(args[1], args[3]));
+      case "javascript":
+        if (typeof params == "undefined") {
+          editor.insert("function " + name + "() {");
         } else {
-          editor.insert(call(args[1], ""));
-        }
-        process_command("break");
-        break;
-      case "create":
-        if (args[1] == "function") {
-          if (args[4] == "parameters" || args[4] == "parameter" || args[4] == "perimeter") {
-            var params = args.slice(5);
-            if (params.length > 1) {
-              params.splice(-2, 1);
-              editor.insert(func(args[2], params));
-            } else {
-              editor.insert(func(args[2], args[5]));
-            }
-          } else {
-            editor.insert(func(args[2], ""));
-          }
-
-          if (language == "assembly") {
-            editor.indent();
-          }
-
-          process_command("break");
-        } else if (args[1] == "string") {
-          editor.insert("\"");
-          string = true;
+          params = params.replace("and ", "");
+          editor.insert("function " + name + "(" + params.replace(" ", ", ") + ") {");
         }
         break;
-      case "delete":
-        if (args[2] == "line") {
-          editor.removeToLineStart();
-        } else if (args[2] == "file") {
-          editor.destroy();
+      case "python":
+        if (typeof params == "undefined") {
+          editor.insert("def " + name + "():");
+        } else {
+          params = params.replace("and ", "");
+          editor.insert("def " + name + "(" + params.replace(" ", ", ") + "):");
         }
         break;
-      case "and":
-      case "end":
-        if (args[1] == "function") {
-          editor.insert("\n");
-          editor.removeToLineStart();
-        } else if (args[1] == "string") {
-          editor.insert("\"");
-          string = false;
-        }
-        break;
-      case "find":
-        editor.find(args[1]);
-        break;
-      case "for":
-        if (args[2] == "between") {
-          editor.insert("for " + args[1] + " in range(" + args[3] + ", " + args[5] + "):")
-        } else if (args[2] == "in") {
-          editor.insert("for " + args[1] + " in " + args[3] + ":")
-        }
-        process_command("break");
-        break;
-      case "delta":
-      case "goto":
-        editor.gotoLine(args[2]);
-        break;
-      case "import":
-        editor.insert("import " + args[1]);
-        break;
-      case "replace":
-        editor.replace(args[1]);
-        break;
-      case "set":
-        if (args[2] == "language") {
-          editor.getSession().setMode("ace/mode/" + args[4].toLowerCase().replace("assembly", "assembly_x86"));
-          language = args[4].toLowerCase();
-        }
-        break;
-      case "switch":
-        editor.insert(args[0] + " " + args[1] + ":");
-        process_command("break");
-        break;
-      case "if":
-      case "while":
-        var keyword = args[0];
-        args.shift();
-        var argstr = args.join(" ");
-        argstr = argstr.replace("is ", "");
-        argstr = argstr.replace("than ", "");
-        argstr = argstr.replace("then ", "");
-        argstr = argstr.replace("equals", "==");
-        argstr = argstr.replace("equal to", "==");
-        argstr = argstr.replace("equal", "==");
-        argstr = argstr.replace("less", "<");
-        argstr = argstr.replace("more", ">");
-        argstr = argstr.replace("greater", ">");
-
-        editor.insert(ifwhile(keyword, argstr));
-        process_command("break");
-        break;
-      default:
-        console.log(args);
     }
-  }
-}
 
-function call(method, library) {
-  if (library == "") {
-    return method + "()";
-  } else {
-    return library + "." + method + "()";
-  }
-}
+    editor.insert("\n");
+  };
 
-function func(name, parameters) {
-  switch (language) {
-    case "assembly":
-      return "PUBLIC _" + name + "\n_" + name + " PROC\n";
-    case "javascript":
-      if (typeof parameters == "string") {
-        if (parameters == "") {
-          return "function " + name + "() {";
-        } else {
-          return "function " + name + "(" + parameters + ") {";
-        }
-      } else {
-        return "function " + name + "(" + parameters.join(", ") + ") {";
-      }
-    case "python":
-      if (typeof parameters == "string") {
-        if (parameters == "") {
-          return "def " + name + "():";
-        } else {
-          return "def " + name + "(" + parameters + "):";
-        }
-      } else {
-        return "def " + name + "(" + parameters.join(", ") + "):";
-      }
-  }
-}
+  var deleet = function(thing) {
+    if (thing == "line") {
+      editor.removeToLineStart();
+    } else if (thing == "file") {
+      editor.destroy();
+    }
+  };
 
-function ifwhile(keyword, args) {
-  switch (language) {
-    case "assembly":
-      return "movl $0, -8(%rbp)\nmovl $0, -4(%rbp)\n\nmovl -8(%rbp), %eax\ncmpl -4(%rbp), %eax\njge .L2";
-    case "javascript":
-      return keyword + " (" + args + ") {";
-    case "python":
-      return keyword + " " + args + ":";
-    case "swift":
-      return keyword + " " + args + " {";
-  }
+  // TODO: end function
+
+  var find = function(text) {
+    editor.find(text);
+  };
+
+  var for_between = function(vra, min, max) {
+    switch (language) {
+      case "python":
+        editor.insert("for " + vra + " in range(" + min + ", " + max + "):");
+        break;
+    }
+
+    editor.insert("\n");
+  };
+
+  var for_in = function(vra, arr) {
+    switch (language) {
+      case "python":
+        editor.insert("for " + vra + " in " + arr + ":");
+        break;
+    }
+
+    editor.insert("\n");
+  };
+
+  var goto = function(line) {
+    editor.gotoLine(line);
+  };
+
+  var ifs = function(args) {
+    args = args.replace("is ", "");
+    args = args.replace("than ", "");
+    args = args.replace("then ", "");
+    args = args.replace("equals", "==");
+    args = args.replace("equal to", "==");
+    args = args.replace("equal", "==");
+    args = args.replace("less", "<");
+    args = args.replace("more", ">");
+    args = args.replace("greater", ">");
+
+    switch (language) {
+      case "assembly":
+        editor.insert("movl $0, -8(%rbp)\nmovl $0, -4(%rbp)\n\nmovl -8(%rbp), %eax\ncmpl -4(%rbp), %eax\njge .L2");
+        break;
+      case "javascript":
+        editor.insert("if (" + args + ") {");
+        break;
+      case "python":
+        editor.insert("if " + args + ":");
+        break;
+    }
+
+    editor.insert("\n");
+  };
+
+  var improt = function(library) {
+    switch (language) {
+      case "python":
+        editor.insert("import " + library);
+        break;
+    }
+
+    editor.insert("\n");
+  };
+
+  var improt_method = function(method, library) {
+    switch (language) {
+      case "python":
+        editor.insert("from " + library + " import " + method);
+        break;
+    }
+
+    editor.insert("\n");
+  };
+
+  var set = function(lang) {
+    lang = lang.toLowerCase();
+    lang = lang.replace("assembly", "assembly_x86");
+
+    editor.getSession().setMode("ace/mode/" + lang);
+    language = lang;
+  };
+
+  var swtich = function(vra) {
+    switch (language) {
+      case "python":
+        editor.insert("switch " + vra + ":");
+        break;
+    }
+
+    editor.insert("\n");
+  };
+
+  var whiles = function(args) {
+    args = args.replace("is ", "");
+    args = args.replace("than ", "");
+    args = args.replace("then ", "");
+    args = args.replace("equals", "==");
+    args = args.replace("equal to", "==");
+    args = args.replace("equal", "==");
+    args = args.replace("less", "<");
+    args = args.replace("more", ">");
+    args = args.replace("greater", ">");
+
+    switch (language) {
+      case "javascript":
+        editor.insert("while (" + args + ") {");
+        break;
+      case "python":
+        editor.insert("while " + args + ":");
+        break;
+    }
+
+    editor.insert("\n");
+  };
+
+  var commands = {
+    'break': brake,
+    'call :method': call,
+    'call :method from :library': call,
+    'create function :name': functoin,
+    'create function :name with parameter *params': functoin,
+    'create function :name with parameters *params': functoin,
+    'delete this :thing': deleet,
+    'find :text': find,
+    'for :vra between :min and :max': for_between,
+    'for :vra in :arr': for_in,
+    'goto line :line': goto,
+    'if *args': ifs,
+    'import :library': improt,
+    'import :method from :library': improt_method,
+    'set the language to :lang': set,
+    'switch :vra': swtich,
+    'well *args': whiles,
+    'while *args': whiles
+  };
+
+  annyang.addCommands(commands);
+  annyang.debug(true);
+  annyang.start();
 }
