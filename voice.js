@@ -82,9 +82,9 @@ function process_command(command) {
       case "find":
         editor.find(args[1]);
         break;
-      case "replace" x "with" y:
-        x = editor.find(args[1]);
-        editor.replace(y)
+      case "replace with":
+        editor.find(args[1]);
+        editor.replace(args[3])
         break;
       case "delete":
         if (args[2] == "line") {
