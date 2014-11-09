@@ -6,10 +6,21 @@ if (annyang) {
   };
 
   var call = function(method, library) {
-    if (typeof library == "undefined") {
-      editor.insert(method + "()");
-    } else {
-      editor.insert(library + "." + method + "()");
+    switch (library) {
+      case "javascript":
+        if (typeof library == "undefined") {
+          editor.insert(method + "();");
+        } else {
+          editor.insert(library + "." + method + "();");
+        }
+        break;
+      case "python":
+        if (typeof library == "undefined") {
+          editor.insert(method + "()");
+        } else {
+          editor.insert(library + "." + method + "()");
+        }
+        break;
     }
 
     editor.insert("\n");
@@ -166,6 +177,29 @@ if (annyang) {
     editor.insert("\n");
   };
 
+  var variable = function(name, value) {
+    var val = string_to_num(value);
+
+    switch (language) {
+      case "javascript":
+        if (typeof val == "string") {
+          editor.insert("var " + name + " = \"" + val + "\";");
+        } else if (typeof val == "number") {
+          editor.insert("var " + name + " = " + val + ";");
+        }
+        break;
+      case "python":
+        if (typeof val == "string") {
+          editor.insert(name + " = \"" + val + "\"");
+        } else if (typeof val == "number") {
+          editor.insert(name + " = " + val);
+        }
+        break;
+    }
+
+    editor.insert("\n");
+  }
+
   var whiles = function(args) {
     args = conditionalize(args);
 
@@ -185,9 +219,10 @@ if (annyang) {
     'break': brake,
     'call :method': call,
     'call :method from :library': call,
-    'create function :name': functoin,
-    'create function :name with parameter *params': functoin,
-    'create function :name with parameters *params': functoin,
+    'create (a) function (called) :name': functoin,
+    'create (a) function (called) :name with parameter *params': functoin,
+    'create (a) function (called) :name with parameters *params': functoin,
+    'create (a) variable (called) :name (that is) equal to :value': variable,
     'delete this :thing': deleet,
     'else': elsa,
     'else if *args': elsaif,
@@ -208,11 +243,9 @@ if (annyang) {
   annyang.debug(true);
   annyang.start();
 
-  annyang.addCallback("result", function() {
-    setTimeout(function() {
-      localStorage.setItem("code", editor.getValue());
-    }, 1000);
-  });
+  setInterval(function() {
+    localStorage.setItem("code", editor.getValue());
+  }, 1000);
 }
 
 function conditionalize(str) {
@@ -226,4 +259,19 @@ function conditionalize(str) {
   str = str.replace("more", ">");
   str = str.replace("greater", ">");
   return str;
+}
+
+function string_to_num(str) {
+  str = str.toLowerCase();
+  if (str == "0" || str == "zero") return 0;
+  if (str == "1" || str == "one") return 1;
+  if (str == "2" || str == "two") return 2;
+  if (str == "3" || str == "three") return 3;
+  if (str == "4" || str == "four") return 4;
+  if (str == "5" || str == "five") return 5;
+  if (str == "6" || str == "six") return 6;
+  if (str == "7" || str == "seven") return 7;
+  if (str == "8" || str == "eight") return 8;
+  if (str == "9" || str == "nine") return 9;
+  return str
 }
