@@ -51,6 +51,42 @@ if (annyang) {
 
   // TODO: end function
 
+  var elsa = function() {
+    switch (language) {
+      case "javascript":
+        editor.insert("} else {");
+        break;
+      case "python":
+        editor.insert("else:");
+        break;
+    }
+
+    editor.insert("\n");
+  };
+
+  var elsaif = function(args) {
+    args = args.replace("is ", "");
+    args = args.replace("than ", "");
+    args = args.replace("then ", "");
+    args = args.replace("equals", "==");
+    args = args.replace("equal to", "==");
+    args = args.replace("equal", "==");
+    args = args.replace("less", "<");
+    args = args.replace("more", ">");
+    args = args.replace("greater", ">");
+
+    switch (language) {
+      case "javascript":
+        editor.insert("} else if (" + args + ") {");
+        break;
+      case "python":
+        editor.insert("elif " + args + ":");
+        break;
+    }
+
+    editor.insert("\n");
+  };
+
   var find = function(text) {
     editor.find(text);
   };
@@ -174,6 +210,8 @@ if (annyang) {
     'create function :name with parameter *params': functoin,
     'create function :name with parameters *params': functoin,
     'delete this :thing': deleet,
+    'else': elsa,
+    'else if *args': elsaif,
     'find :text': find,
     'for :vra between :min and :max': for_between,
     'for :vra in :arr': for_in,
