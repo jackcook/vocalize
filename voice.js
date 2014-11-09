@@ -43,7 +43,7 @@ if (annyang) {
     editor.insert("\n");
   }
 
-  var callpl = function(library, method, params) {
+  var callpl = function(method, library, params) {
     params = params.split("and ").join("").split("& ").join("").split(" ").join(", ");
 
     switch (language) {
@@ -197,7 +197,7 @@ if (annyang) {
     args = conditionalize(args);
 
     switch (language) {
-      case "assembly":
+      case "assembly_x86":
         editor.insert("movl $0, -8(%rbp)\nmovl $0, -4(%rbp)\n\nmovl -8(%rbp), %eax\ncmpl -4(%rbp), %eax\njge .L2");
         break;
       case "javascript":
@@ -313,6 +313,7 @@ if (annyang) {
     'create (a) function (called) :name with parameter *params': functoin,
     'create (a) function (called) :name with parameters *params': functoin,
     'create (a) variable (called) :name (that is) equal to :value': variable,
+    'create (a) variable (called) :name with a value of :value': variable,
     'delete this :thing': deleet,
     'else': elsa,
     'else if *args': elsaif,
