@@ -1,5 +1,8 @@
 window.speechRecognition = (window.speechRecognition || window.webkitSpeechRecognition);
 
+var language = "python";
+var string = false;
+
 if (!!window.speechRecognition) {
   recognition = new webkitSpeechRecognition();
   recognition.continuous = true;
@@ -10,7 +13,16 @@ if (!!window.speechRecognition) {
   recognition.onresult = function(event) {
     for (var i = event.resultIndex; i < event.results.length; i++) {
       if (event.results[i].isFinal) {
-        process_command(event.results[i][0].transcript);
+        var cmd = event.results[i][0].transcript;
+        if (string) {
+          if (cmd == " end string" || cmd == " and string") {
+            process_command(cmd);
+          } else {
+            editor.insert(cmd);
+          }
+        } else {
+          process_command(cmd);
+        }
       }
     }
   }
@@ -19,8 +31,6 @@ if (!!window.speechRecognition) {
 } else {
   console.error("Speech recognition is not available on this device.");
 }
-
-var language = "python";
 
 function process_command(command) {
   var args = command.split(" ");
@@ -58,10 +68,16 @@ function process_command(command) {
           } else {
             editor.insert(func(args[2], ""));
           }
+
+          if (language == "assembly") {
+            editor.indent();
+          }
+
+          process_command("break");
         } else if (args[1] == "string") {
           editor.insert("\"");
+          string = true;
         }
-        process_command("break");
         break;
       case "delete":
         if (args[2] == "line") {
@@ -77,6 +93,7 @@ function process_command(command) {
           editor.removeToLineStart();
         } else if (args[1] == "string") {
           editor.insert("\"");
+          string = false;
         }
         break;
       case "find":
@@ -102,7 +119,7 @@ function process_command(command) {
         break;
       case "set":
         if (args[2] == "language") {
-          editor.getSession().setMode("ace/mode/" + args[4].toLowerCase());
+          editor.getSession().setMode("ace/mode/" + args[4].toLowerCase().replace("assembly", "assembly_x86"));
           language = args[4].toLowerCase();
         }
         break;
@@ -144,6 +161,18 @@ function call(method, library) {
 
 function func(name, parameters) {
   switch (language) {
+    case "assembly":
+      return "PUBLIC _" + name + "\n_" + name + " PROC\n";
+    case "javascript":
+      if (typeof parameters == "string") {
+        if (parameters == "") {
+          return "function " + name + "() {";
+        } else {
+          return "function " + name + "(" + parameters + ") {";
+        }
+      } else {
+        return "function " + name + "(" + parameters.join(", ") + ") {";
+      }
     case "python":
       if (typeof parameters == "string") {
         if (parameters == "") {
@@ -159,6 +188,8 @@ function func(name, parameters) {
 
 function ifwhile(keyword, args) {
   switch (language) {
+    case "assembly":
+      return "movl $0, -8(%rbp)\nmovl $0, -4(%rbp)\n\nmovl -8(%rbp), %eax\ncmpl -4(%rbp), %eax\njge .L2";
     case "javascript":
       return keyword + " (" + args + ") {";
     case "python":
