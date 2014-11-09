@@ -82,9 +82,8 @@ function process_command(command) {
       case "find":
         editor.find(args[1]);
         break;
-      case "replace" x "with" y:
-        x = editor.find(args[1]);
-        editor.replace(y)
+      case "replace":
+        editor.replace(args[1]);
         break;
       case "delete":
         if (args[2] == "line") {
@@ -116,6 +115,16 @@ function process_command(command) {
         break;
       case "switch":
         editor.insert(args[0] + " " + args[1] + ":");
+        process_command("break");
+        break;
+      case "for":
+        if (args[2] == "between") {
+          editor.insert("for " + args[1] + " in range(" + args[3] + ", " + args[5] + "):")
+        } else if (args[2] == "in") {
+          editor.insert("for " + args[1] + " in " + args[3] + ":")
+        } else {
+          console.log(args);
+        }
         process_command("break");
         break;
       default:
