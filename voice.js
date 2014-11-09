@@ -6,9 +6,6 @@ if (annyang) {
   };
 
   var call = function(method, library) {
-    method = method.toLowerCase();
-    library = library.toLowerCase();
-
     if (typeof library == "undefined") {
       editor.insert(method + "()");
     } else {
@@ -19,9 +16,6 @@ if (annyang) {
   };
 
   var functoin = function(name, params) {
-    name = name.toLowerCase();
-    params = params.toLowerCase();
-
     switch (language) {
       case "assembly_x86":
         editor.insert("PUBLIC _" + name + "\n_" + name + " PROC");
@@ -86,13 +80,10 @@ if (annyang) {
   };
 
   var find = function(text) {
-    text = text.toLowerCase();
     editor.find(text);
   };
 
   var for_between = function(vra, min, max) {
-    vra = vra.toLowerCase();
-
     switch (language) {
       case "javascript":
         editor.insert("for (int i = 0; i < " + arr + ".length; i++) {");
@@ -106,9 +97,6 @@ if (annyang) {
   };
 
   var for_in = function(vra, arr) {
-    vra = vra.toLowerCase();
-    arr = arr.toLowerCase();
-
     switch (language) {
       case "python":
         editor.insert("for " + vra + " in " + arr + ":");
@@ -141,8 +129,6 @@ if (annyang) {
   };
 
   var improt = function(library) {
-    library = library.toLowerCase();
-
     switch (language) {
       case "python":
         editor.insert("import " + library);
@@ -153,9 +139,6 @@ if (annyang) {
   };
 
   var improt_method = function(method, library) {
-    method = method.toLowerCase();
-    library = library.toLowerCase();
-
     switch (language) {
       case "python":
         editor.insert("from " + library + " import " + method);
@@ -174,8 +157,6 @@ if (annyang) {
   };
 
   var swtich = function(vra) {
-    vra = vra.toLowerCase();
-
     switch (language) {
       case "python":
         editor.insert("switch " + vra + ":");
@@ -235,7 +216,6 @@ if (annyang) {
 }
 
 function conditionalize(str) {
-  str = str.toLowerCase();
   str = str.replace("is ", "");
   str = str.replace("than ", "");
   str = str.replace("then ", "");
