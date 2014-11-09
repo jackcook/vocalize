@@ -23,6 +23,10 @@ if (!!window.speechRecognition) {
 function process_command(command) {
   var args = command.split(" ");
 
+  for (var i = 0; i < args.length; i++) {
+    args[i] = args[i].toLowerCase();
+  }
+
   if (args[0].substr(args[0].length - 1) == ".") {
     editor.insert(args[0] + args[1] + "()");
   } else {
@@ -58,6 +62,7 @@ function process_command(command) {
         }
         process_command("break");
         break;
+      case "and":
       case "end":
         if (args[1] == "function") {
           editor.insert("\n");
@@ -79,6 +84,17 @@ function process_command(command) {
         break;
       case "replace":
         editor.replace(args[1]);
+        break;
+      case "delete":
+        if (args[2] == "line") {
+          editor.removeToLineStart();
+        } else if (args[2] == "file") {
+          editor.destroy();
+        }
+        break;
+      case "goto":
+      case "delta":
+        editor.gotoLine(args[2]);
         break;
       default:
         console.log(args);
