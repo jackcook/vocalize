@@ -29,6 +29,8 @@
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/twilight");
     editor.getSession().setMode("ace/mode/python");
+    editor.setValue(localStorage.getItem("code"));
+    editor.gotoLine(editor.session.getLength());
     </script>
   </body>
 </html>

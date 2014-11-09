@@ -204,6 +204,12 @@ if (annyang) {
   annyang.addCommands(commands);
   annyang.debug(true);
   annyang.start();
+
+  annyang.addCallback("result", function() {
+    setTimeout(function() {
+      localStorage.setItem("code", editor.getValue());
+    }, 1000);
+  });
 }
 
 function conditionalize(str) {
