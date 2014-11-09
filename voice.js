@@ -49,7 +49,7 @@ function process_command(command) {
             var params = args.slice(5);
             if (params.length > 1) {
               params.splice(-2, 1);
-              editor.insert("def " + args[2] + "(" + params + "):");
+              editor.insert("def " + args[2] + "(" + params.join(", ") + "):");
             } else {
               editor.insert("def " + args[2] + "(" + args[5] + "):");
             }
