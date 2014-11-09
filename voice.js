@@ -14,6 +14,7 @@ if (annyang) {
           editor.insert(library + "." + method + "();");
         }
         break;
+      case "lua":
       case "python":
         if (typeof library == "undefined") {
           editor.insert(method + "()");
@@ -37,6 +38,7 @@ if (annyang) {
           editor.insert(library + "." + method + "(" + params + ");");
         }
         break;
+      case "lua":
       case "python":
         if (typeof library == "undefined") {
           editor.insert(method + "(" + params + ")");
@@ -58,16 +60,23 @@ if (annyang) {
         if (typeof params == "undefined") {
           editor.insert("function " + name + "() {");
         } else {
-          params = params.split("and ").join("");
-          editor.insert("function " + name + "(" + params.replace(" ", ", ") + ") {");
+          params = params.split("and ").join("").split(" ").join(", ");
+          editor.insert("function " + name + "(" + params + ") {");
         }
         break;
+      case "lua":
+        if (typeof params == "undefined") {
+          editor.insert(name + " = function ()");
+        } else {
+          params = params.split("and ").join("").split(" ").join(", ");
+          editor.insert(name + " = function (" + params + ")");
+        }
       case "python":
         if (typeof params == "undefined") {
           editor.insert("def " + name + "():");
         } else {
-          params = params.split("and ").join("");
-          editor.insert("def " + name + "(" + params.replace(" ", ", ") + "):");
+          params = params.split("and ").join("").split(" ").join(", ");
+          editor.insert("def " + name + "(" + params + "):");
         }
         break;
     }
@@ -89,6 +98,10 @@ if (annyang) {
         editor.insert("}");
         editor.insert("\n");
         break;
+      case "lua":
+        editor.insert("end");
+        editor.insert("\n");
+        break;
       case "python":
         editor.removeToLineStart();
         editor.indent();
@@ -100,6 +113,9 @@ if (annyang) {
     switch (language) {
       case "javascript":
         editor.insert("} else {");
+        break;
+      case "lua":
+        editor.insert("else");
         break;
       case "python":
         editor.insert("else:");
@@ -115,6 +131,9 @@ if (annyang) {
     switch (language) {
       case "javascript":
         editor.insert("} else if (" + args + ") {");
+        break;
+      case "lua":
+        editor.insert("elseif " + args + " then");
         break;
       case "python":
         editor.insert("elif " + args + ":");
@@ -132,6 +151,9 @@ if (annyang) {
     switch (language) {
       case "javascript":
         editor.insert("for (int i = 0; i < " + arr + ".length; i++) {");
+        break;
+      case "lua":
+        editor.insert("for i=" + min + "," + max + " do");
         break;
       case "python":
         editor.insert("for " + vra + " in range(" + min + ", " + max + "):");
@@ -165,6 +187,9 @@ if (annyang) {
       case "javascript":
         editor.insert("if (" + args + ") {");
         break;
+      case "lua":
+        editor.insert("if " + args + " then");
+        break;
       case "python":
         editor.insert("if " + args + ":");
         break;
@@ -175,6 +200,9 @@ if (annyang) {
 
   var improt = function(library) {
     switch (language) {
+      case "lua":
+        editor.insert("requre \"" + library + "\"");
+        break;
       case "python":
         editor.insert("import " + library);
         break;
@@ -203,6 +231,9 @@ if (annyang) {
 
   var swtich = function(vra) {
     switch (language) {
+      case "javascript":
+        editor.insert("switch (" + vra + ") {");
+        break;
       case "python":
         editor.insert("switch " + vra + ":");
         break;
@@ -222,6 +253,7 @@ if (annyang) {
           editor.insert("var " + name + " = " + val + ";");
         }
         break;
+      case "lua":
       case "python":
         if (typeof val == "string") {
           editor.insert(name + " = \"" + val + "\"");
@@ -240,6 +272,9 @@ if (annyang) {
     switch (language) {
       case "javascript":
         editor.insert("while (" + args + ") {");
+        break;
+      case "lua":
+        editor.insert("while " + args + " do");
         break;
       case "python":
         editor.insert("while " + args + ":");
@@ -306,7 +341,7 @@ function string_to_num(str) {
   if (str == "1" || str == "one") return 1;
   if (str == "2" || str == "two") return 2;
   if (str == "3" || str == "three") return 3;
-  if (str == "4" || str == "four") return 4;
+  if (str == "4" || str == "four" || str == "for") return 4;
   if (str == "5" || str == "five") return 5;
   if (str == "6" || str == "six") return 6;
   if (str == "7" || str == "seven") return 7;

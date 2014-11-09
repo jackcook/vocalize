@@ -31,6 +31,20 @@
     editor.getSession().setMode("ace/mode/python");
     editor.setValue(localStorage.getItem("code"));
     editor.gotoLine(editor.session.getLength());
+
+    var listening = true;
+    editor.commands.addCommand({
+      name: 'toggleSpeech',
+      bindKey: {win: 'Ctrl-L', mac: 'Command-L'},
+      exec: function(editor) {
+        if (listening) {
+          annyang.abort();
+        } else {
+          annyang.start();
+        }
+        listening = !listening;
+      }
+    });
     </script>
   </body>
 </html>
