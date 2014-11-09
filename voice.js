@@ -27,7 +27,23 @@ if (annyang) {
     editor.insert("\n");
   };
 
-  var callp = function(method, library, params) {
+  var callp = function(method, params) {
+    params = params.split("and ").join("").split("& ").join("").split(" ").join(", ");
+
+    switch (language) {
+      case "javascript":
+        editor.insert(method + "(" + params + ");");
+        break;
+      case "lua":
+      case "python":
+        editor.insert(method + "(" + params + ")");
+        break;
+    }
+
+    editor.insert("\n");
+  }
+
+  var callpl = function(library, method, params) {
     params = params.split("and ").join("").split("& ").join("").split(" ").join(", ");
 
     switch (language) {
@@ -88,7 +104,7 @@ if (annyang) {
     if (thing == "line") {
       editor.removeToLineStart();
     } else if (thing == "file") {
-      editor.destroy();
+      editor.setValue("");
     }
   };
 
@@ -150,7 +166,7 @@ if (annyang) {
   var for_between = function(vra, min, max) {
     switch (language) {
       case "javascript":
-        editor.insert("for (int i = 0; i < " + arr + ".length; i++) {");
+        editor.insert("for (int i = 0; i < " + vra + ".length; i++) {");
         break;
       case "lua":
         editor.insert("for i=" + min + "," + max + " do");
@@ -290,8 +306,9 @@ if (annyang) {
     'call :method from :library': call,
     'call :method with parameter *params': callp,
     'call :method with parameters *params': callp,
-    'call :method from :library with parameter *params': callp,
-    'call :method from :library with parameters *params': callp,
+    'call :method from :library with perimeter *params': callpl,
+    'call :method from :library with parameter *params': callpl,
+    'call :method from :library with parameters *params': callpl,
     'create (a) function (called) :name': functoin,
     'create (a) function (called) :name with parameter *params': functoin,
     'create (a) function (called) :name with parameters *params': functoin,
