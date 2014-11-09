@@ -6,7 +6,7 @@ if (annyang) {
   };
 
   var call = function(method, library) {
-    switch (library) {
+    switch (language) {
       case "javascript":
         if (typeof library == "undefined") {
           editor.insert(method + "();");
@@ -26,6 +26,29 @@ if (annyang) {
     editor.insert("\n");
   };
 
+  var callp = function(method, library, params) {
+    params = params.split("and ").join("").split("& ").join("").split(" ").join(", ");
+
+    switch (language) {
+      case "javascript":
+        if (typeof library == "undefined") {
+          editor.insert(method + "(" + params + ");");
+        } else {
+          editor.insert(library + "." + method + "(" + params + ");");
+        }
+        break;
+      case "python":
+        if (typeof library == "undefined") {
+          editor.insert(method + "(" + params + ")");
+        } else {
+          editor.insert(library + "." + method + "(" + params + ")");
+        }
+        break;
+    }
+
+    editor.insert("\n");
+  }
+
   var functoin = function(name, params) {
     switch (language) {
       case "assembly_x86":
@@ -35,7 +58,7 @@ if (annyang) {
         if (typeof params == "undefined") {
           editor.insert("function " + name + "() {");
         } else {
-          params = params.replace("and ", "");
+          params = params.split("and ").join("");
           editor.insert("function " + name + "(" + params.replace(" ", ", ") + ") {");
         }
         break;
@@ -43,7 +66,7 @@ if (annyang) {
         if (typeof params == "undefined") {
           editor.insert("def " + name + "():");
         } else {
-          params = params.replace("and ", "");
+          params = params.split("and ").join("");
           editor.insert("def " + name + "(" + params.replace(" ", ", ") + "):");
         }
         break;
@@ -60,7 +83,18 @@ if (annyang) {
     }
   };
 
-  // TODO: end function
+  var end = function() {
+    switch (language) {
+      case "javascript":
+        editor.insert("}");
+        editor.insert("\n");
+        break;
+      case "python":
+        editor.removeToLineStart();
+        editor.indent();
+        break;
+    }
+  };
 
   var elsa = function() {
     switch (language) {
@@ -219,6 +253,10 @@ if (annyang) {
     'break': brake,
     'call :method': call,
     'call :method from :library': call,
+    'call :method with parameter *params': callp,
+    'call :method with parameters *params': callp,
+    'call :method from :library with parameter *params': callp,
+    'call :method from :library with parameters *params': callp,
     'create (a) function (called) :name': functoin,
     'create (a) function (called) :name with parameter *params': functoin,
     'create (a) function (called) :name with parameters *params': functoin,
@@ -226,6 +264,7 @@ if (annyang) {
     'delete this :thing': deleet,
     'else': elsa,
     'else if *args': elsaif,
+    'end': end,
     'find :text': find,
     'for :vra between :min and :max': for_between,
     'for :vra in :arr': for_in,
