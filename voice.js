@@ -65,15 +65,7 @@ if (annyang) {
   };
 
   var elsaif = function(args) {
-    args = args.replace("is ", "");
-    args = args.replace("than ", "");
-    args = args.replace("then ", "");
-    args = args.replace("equals", "==");
-    args = args.replace("equal to", "==");
-    args = args.replace("equal", "==");
-    args = args.replace("less", "<");
-    args = args.replace("more", ">");
-    args = args.replace("greater", ">");
+    args = conditionalize(args);
 
     switch (language) {
       case "javascript":
@@ -116,15 +108,7 @@ if (annyang) {
   };
 
   var ifs = function(args) {
-    args = args.replace("is ", "");
-    args = args.replace("than ", "");
-    args = args.replace("then ", "");
-    args = args.replace("equals", "==");
-    args = args.replace("equal to", "==");
-    args = args.replace("equal", "==");
-    args = args.replace("less", "<");
-    args = args.replace("more", ">");
-    args = args.replace("greater", ">");
+    args = conditionalize(args);
 
     switch (language) {
       case "assembly":
@@ -180,15 +164,7 @@ if (annyang) {
   };
 
   var whiles = function(args) {
-    args = args.replace("is ", "");
-    args = args.replace("than ", "");
-    args = args.replace("then ", "");
-    args = args.replace("equals", "==");
-    args = args.replace("equal to", "==");
-    args = args.replace("equal", "==");
-    args = args.replace("less", "<");
-    args = args.replace("more", ">");
-    args = args.replace("greater", ">");
+    args = conditionalize(args);
 
     switch (language) {
       case "javascript":
@@ -228,4 +204,17 @@ if (annyang) {
   annyang.addCommands(commands);
   annyang.debug(true);
   annyang.start();
+}
+
+function conditionalize(str) {
+  str = str.replace("is ", "");
+  str = str.replace("than ", "");
+  str = str.replace("then ", "");
+  str = str.replace("equals", "==");
+  str = str.replace("equal to", "==");
+  str = str.replace("equal", "==");
+  str = str.replace("less", "<");
+  str = str.replace("more", ">");
+  str = str.replace("greater", ">");
+  return str;
 }
